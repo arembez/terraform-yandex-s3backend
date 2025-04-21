@@ -41,11 +41,6 @@ resource "local_file" "backend_tf" {
     dynamodb_endpoint = yandex_ydb_database_serverless.database.document_api_endpoint,
     dynamodb_table    = aws_dynamodb_table.lock_table.id
   })
-  # Clean up the backend config file on destroy
-  provisioner "local-exec" {
-    when    = destroy
-    command = "rm -f ${path.root}/backend.tf"
-  }
 }
 
 # Securely writes the CI/CD service account key to a local JSON file

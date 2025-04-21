@@ -19,6 +19,8 @@ resource "yandex_storage_bucket" "state" {
   versioning {
     enabled = true
   }
+  # Force destroy bucket when backend is destroying
+  force_destroy = true
   # Automatically deletes non-current versions after 30 days
   lifecycle_rule {
     enabled = true
