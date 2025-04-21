@@ -5,7 +5,7 @@ locals {
   # - remove invalid characters
   # - convert to lowercase
   # - limit to 63 characters (for resource naming compatibility)
-  project_name = substr(lower(replace(coalesce(var.input_project_name, basename(abspath(path.root))), "/[^a-zA-Z0-9-]|-+$/", "-")), 0, 63)
+  project_name = substr(lower(replace(coalesce(var.project_name, basename(abspath(path.root))), "/[^a-zA-Z0-9-]|-+$/", "-")), 0, 63)
 
   bucket_name  = "${local.project_name}-backend"     # S3 bucket name for storing Terraform backend state
   ydb_name     = "${local.project_name}-backend"     # YDB database name (used for DynamoDB-compatible lock table)
@@ -15,7 +15,7 @@ locals {
 }
 
 # Optional project name to customize resource naming
-variable "input_project_name" {
+variable "project_name" {
   type        = string
   description = "Optional custom name for the project. If left blank, the project directory name will be used."
   default = ""
