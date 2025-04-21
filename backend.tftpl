@@ -1,0 +1,22 @@
+terraform {
+  backend "s3" {
+    region                   = "ru-central1"
+    profile                  = "${profile}"
+    shared_credentials_files = [".aws/credentials"]
+    bucket                   = "${bucket_id}"
+    key                      = "${key}"
+
+    endpoints = {
+      s3       = "https://storage.yandexcloud.net"
+      dynamodb = "${dynamodb_endpoint}"
+    }
+    use_lockfile   = false
+    dynamodb_table = "${dynamodb_table}"
+
+    skip_credentials_validation = true
+    skip_region_validation      = true
+    skip_requesting_account_id  = true
+    skip_metadata_api_check     = true
+    force_path_style            = true
+  }
+}
