@@ -50,6 +50,7 @@ resource "local_sensitive_file" "cicd-key" {
   content         = <<EOH
   {
     "id": "${yandex_iam_service_account_key.sa-cicd-auth-key.id}",
+    "service_account_id": "${yandex_iam_service_account.sa-cicd.id}",
     "created_at": "${yandex_iam_service_account_key.sa-cicd-auth-key.created_at}",
     "key_algorithm": "${yandex_iam_service_account_key.sa-cicd-auth-key.key_algorithm}",
     "public_key": ${jsonencode(yandex_iam_service_account_key.sa-cicd-auth-key.public_key)},
