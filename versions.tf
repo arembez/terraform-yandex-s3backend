@@ -7,7 +7,7 @@ terraform {
     }
     aws = {
       source  = "hashicorp/aws" # AWS provider (used for Terraform lock table emulation)
-      version = "~> 5.44"
+      version = "~> 5.44, < 5.96.0"
     }
   }
 }
