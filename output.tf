@@ -45,7 +45,7 @@ resource "local_file" "backend_tf" {
 
 # Securely writes the CI/CD service account key to a local JSON file
 resource "local_sensitive_file" "cicd-key" {
-  filename        = "${path.root}/.key.json" # Output path for the key file
+  filename        = "${path.root}/.backend/sa-key.json" # Output path for the key file
   file_permission = "0600"                   # Only owner can read/write (very secure)
   content         = <<EOH
   {
@@ -61,6 +61,6 @@ resource "local_sensitive_file" "cicd-key" {
   # Clean up key file on destroy
   provisioner "local-exec" {
     when    = destroy
-    command = "rm -f ${path.root}/.key.json"
+    command = "rm -f ${path.root}/.backend/sa-key.json"
   }
 }

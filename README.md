@@ -83,4 +83,4 @@ terraform destroy -target=module.s3backend
 |------|-------------|
 | [backend.tf](#backend.tf) | Backend configuration for your project |
 | [.backend/credentials](#.backend/credentials) | Credentials file for use with Terraform AWS provider pointing to YDB |
-| [.key.json](#.key.json) | Service account key for CI/CD |
+| [.backend/sa-key.json](#.backend/sa-key.json) | Service account key for CI/CD |
