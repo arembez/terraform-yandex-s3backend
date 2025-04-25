@@ -1,20 +1,20 @@
-# Ensures the .aws directory exists before writing credentials to it
-resource "null_resource" "aws_dir" {
+# Ensures the .backend directory exists before writing credentials to it
+resource "null_resource" "backend_dir" {
   # Create directory with secure permissions
   provisioner "local-exec" {
     when    = create
-    command = "mkdir -m 700 -p ${path.root}/.aws"
+    command = "mkdir -m 700 -p ${path.root}/.backend"
   }
   # Remove directory on destroy (will fail if not empty)
   provisioner "local-exec" {
     when    = destroy
-    command = "rm -d ${path.root}/.aws"
+    command = "rm -d ${path.root}/.backend"
   }
 }
 
 # Writes AWS credentials file for use with Terraform AWS provider pointing to YDB
-resource "local_sensitive_file" "aws_credentials" {
-  filename        = "${path.root}/.aws/credentials"
+resource "local_sensitive_file" "backend_credentials" {
+  filename        = "${path.root}/.backend/credentials"
   file_permission = "0600" # Secure file permissions
   content         = <<-EOT
     [${local.ydb_name}]
@@ -24,9 +24,9 @@ resource "local_sensitive_file" "aws_credentials" {
   # Clean up credentials file on destroy
   provisioner "local-exec" {
     when    = destroy
-    command = "rm -f ${path.root}/.aws/credentials"
+    command = "rm -f ${path.root}/.backend/credentials"
   }
-  depends_on = [null_resource.aws_dir] # Ensure directory is created first
+  depends_on = [null_resource.backend_dir] # Ensure directory is created first
 }
 
 # Renders and writes the backend.tf file using a template

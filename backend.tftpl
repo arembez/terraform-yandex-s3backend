@@ -2,7 +2,7 @@ terraform {
   backend "s3" {
     region                   = "ru-central1"
     profile                  = "${profile}"
-    shared_credentials_files = [".aws/credentials"]
+    shared_credentials_files = [".backend/credentials"]
     bucket                   = "${bucket_id}"
     key                      = "${key}"
 
