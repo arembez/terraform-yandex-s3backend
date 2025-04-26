@@ -29,6 +29,23 @@ resource "local_sensitive_file" "backend_credentials" {
   depends_on = [null_resource.backend_dir] # Ensure directory is created first
 }
 
+# Writes the Cloud identifiers to a file for future use (e.g., for CI/CD).
+resource "local_sensitive_file" "backend_identifiers" {
+  filename        = "${path.root}/.backend/identifiers"
+  file_permission = "0600" # Secure file permissions
+  content         = <<-EOT
+    [${local.project_name}]
+    YC_CLOYC_CLOUD_ID = data.yandex_client_config.client.cloud_id
+    YC_FOLDER_ID = data.yandex_client_config.client.folder_id
+  EOT
+  # Clean up credentials file on destroy
+  provisioner "local-exec" {
+    when    = destroy
+    command = "rm -f ${path.root}/.backend/identifiers"
+  }
+  depends_on = [null_resource.backend_dir] # Ensure directory is created first
+}
+
 # Renders and writes the backend.tf file using a template
 resource "local_file" "backend_tf" {
   filename        = "${path.root}/backend.tf" # Save to the project root folder
