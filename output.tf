@@ -34,7 +34,7 @@ resource "local_sensitive_file" "backend_identifiers" {
   filename        = "${path.root}/.backend/identifiers"
   file_permission = "0600" # Secure file permissions
   content         = <<-EOT
-    YC_CLOYC_CLOUD_ID=${data.yandex_client_config.client.cloud_id}
+    YC_CLOUD_ID=${data.yandex_client_config.client.cloud_id}
     YC_FOLDER_ID=${data.yandex_client_config.client.folder_id}
   EOT
   # Clean up credentials file on destroy
