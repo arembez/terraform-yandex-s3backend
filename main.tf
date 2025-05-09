@@ -1,11 +1,15 @@
 # Creates a Yandex Object Storage bucket for storing Terraform state files
 resource "yandex_storage_bucket" "state" {
+  # Current project tag
   tags = { project = local.project_name }
-
-  bucket     = local.bucket_name # Name of the storage bucket
-  access_key = yandex_iam_service_account_static_access_key.sa-static-key.access_key
-  secret_key = yandex_iam_service_account_static_access_key.sa-static-key.secret_key
-
+  # Name of the storage bucket
+  bucket = local.bucket_name
+  # Grant all privileges to the system account
+  grant {
+    id          = yandex_iam_service_account.sa.id
+    type        = "CanonicalUser"
+    permissions = ["FULL_CONTROL"]
+  }
   # Enables server-side encryption using KMS
   server_side_encryption_configuration {
     rule {
@@ -28,18 +32,18 @@ resource "yandex_storage_bucket" "state" {
       days = 30
     }
   }
-  depends_on = [null_resource.s3_prerequisites] # Ensures required resources are created first
+  # Ensures required resources are created first
+  depends_on = [null_resource.s3_prerequisites]
 }
-
 # Creates a YDB Serverless database in Yandex Cloud
 # Yes, one project - one database
 resource "yandex_ydb_database_serverless" "database" {
   description = "YDB Serverless database for Terraform state locking"
-  labels      = { project = local.project_name }
-
-  name = local.ydb_name # Name of the YDB database
+  # Current project tag
+  labels = { project = local.project_name }
+  # Database's name
+  name = local.ydb_name
 }
-
 # Ensures IAM permissions and keys are in place before creating the S3 bucket
 resource "null_resource" "s3_prerequisites" {
   triggers = {
@@ -49,7 +53,6 @@ resource "null_resource" "s3_prerequisites" {
     static_key = yandex_iam_service_account_static_access_key.sa-static-key.id
   }
 }
-
 # Waits until the YDB database is ready before proceeding
 resource "null_resource" "ydb_ready" {
   triggers = {
@@ -60,7 +63,6 @@ resource "null_resource" "ydb_ready" {
     secret_key = yandex_iam_service_account_static_access_key.sa-static-key.secret_key
   }
 }
-
 # Creates a DynamoDB-compatible table (via YDB) for state locking
 resource "aws_dynamodb_table" "lock_table" {
   name         = "state-lock-table" # Name of the lock table
