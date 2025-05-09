@@ -15,7 +15,7 @@ resource "yandex_kms_symmetric_key_iam_binding" "encrypterDecrypter" {
 }
 # Grants the service account editor access to YDB
 resource "yandex_ydb_database_iam_binding" "editor" {
-  database_id = yandex_ydb_database_serverless.database1.id
+  database_id = yandex_ydb_database_serverless.database.id
   role        = "ydb.editor"
   members     = ["serviceAccount:${yandex_iam_service_account.sa.id}"]
 }

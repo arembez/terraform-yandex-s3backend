@@ -48,8 +48,6 @@ resource "yandex_ydb_database_serverless" "database" {
 resource "null_resource" "s3_prerequisites" {
   triggers = {
     sa         = yandex_iam_service_account.sa.id
-    s3_member  = yandex_resourcemanager_folder_iam_member.sa-admin-s3.member
-    kms_member = yandex_resourcemanager_folder_iam_member.sa-editor-kms.member
     static_key = yandex_iam_service_account_static_access_key.sa-static-key.id
   }
 }
@@ -58,7 +56,7 @@ resource "null_resource" "ydb_ready" {
   triggers = {
     endpoint   = yandex_ydb_database_serverless.database.document_api_endpoint
     sa         = yandex_iam_service_account.sa.id
-    ydb_member = yandex_resourcemanager_folder_iam_member.sa-editor-ydb.member
+    ydb_member = yandex_ydb_database_iam_binding.editor.member
     access_key = yandex_iam_service_account_static_access_key.sa-static-key.access_key
     secret_key = yandex_iam_service_account_static_access_key.sa-static-key.secret_key
   }
