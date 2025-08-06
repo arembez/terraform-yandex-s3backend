@@ -4,12 +4,6 @@ resource "yandex_storage_bucket" "state" {
   tags = { project = local.project_name }
   # Name of the storage bucket
   bucket = local.bucket_name
-  # Grant all privileges to the system account
-  grant {
-    id          = yandex_iam_service_account.sa.id
-    type        = "CanonicalUser"
-    permissions = ["FULL_CONTROL"]
-  }
   # Enables server-side encryption using KMS
   server_side_encryption_configuration {
     rule {
@@ -34,6 +28,15 @@ resource "yandex_storage_bucket" "state" {
   }
   # Ensures required resources are created first
   depends_on = [null_resource.s3_prerequisites]
+}
+# Grant all privileges to the system account for backend bucket
+resource "yandex_storage_bucket_grant" "state_grants" {
+  bucket = local.bucket_name
+  grant {
+    id          = yandex_iam_service_account.sa.id
+    type        = "CanonicalUser"
+    permissions = ["FULL_CONTROL"]
+  }
 }
 # Creates a YDB Serverless database in Yandex Cloud
 # Yes, one project - one database
