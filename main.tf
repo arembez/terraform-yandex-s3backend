@@ -4,6 +4,8 @@ resource "yandex_storage_bucket" "state" {
   tags = { project = local.project_name }
   # Name of the storage bucket
   bucket = local.bucket_name
+  # Explicit using of folder ID
+  folder_id = data.yandex_client_config.client.folder_id
   # Enables server-side encryption using KMS
   server_side_encryption_configuration {
     rule {
@@ -17,7 +19,7 @@ resource "yandex_storage_bucket" "state" {
   versioning {
     enabled = true
   }
-  # Force destroy bucket when backend is destroying
+  # Forces bucket destruction when the backend is destroyed
   force_destroy = true
   # Automatically deletes non-current versions after 30 days
   lifecycle_rule {
@@ -29,14 +31,13 @@ resource "yandex_storage_bucket" "state" {
   # Ensures required resources are created first
   depends_on = [null_resource.s3_prerequisites]
 }
-# Grant all privileges to the system account for backend bucket
-resource "yandex_storage_bucket_grant" "state_grants" {
-  bucket = local.bucket_name
-  grant {
-    id          = yandex_iam_service_account.sa.id
-    type        = "CanonicalUser"
-    permissions = ["FULL_CONTROL"]
-  }
+# Grant all privileges to the system account for the backend bucket
+resource "yandex_storage_bucket_iam_binding" "bucket_admin" {
+  bucket = yandex_storage_bucket.state.id
+  role   = "storage.admin" # Or more granular roles below
+  members = [
+    "serviceAccount:${yandex_iam_service_account.sa.id}"
+  ]
 }
 # Creates a YDB Serverless database in Yandex Cloud
 # Yes, one project - one database
