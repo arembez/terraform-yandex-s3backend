@@ -60,7 +60,7 @@ resource "null_resource" "ydb_ready" {
   triggers = {
     endpoint   = yandex_ydb_database_serverless.database.document_api_endpoint
     sa         = yandex_iam_service_account.sa.id
-    ydb_member = yandex_ydb_database_iam_binding.editor.id
+    ydb_member = yandex_ydb_database_iam_binding.editor.database_id
     access_key = yandex_iam_service_account_static_access_key.sa-static-key.access_key
     secret_key = yandex_iam_service_account_static_access_key.sa-static-key.secret_key
   }
